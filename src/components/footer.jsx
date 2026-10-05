@@ -54,13 +54,19 @@ function Footer() {
 
           <div className="footer-social" style={{ display: "flex", gap: "12px", marginTop: "18px" }}>
             {[
-              { Icon: FaFacebookF, label: "Facebook" },
-              { Icon: FaInstagram, label: "Instagram" },
-              { Icon: FaWhatsapp, label: "WhatsApp" },
-            ].map(({ Icon, label }) => (
+              { Icon: FaFacebookF, label: "Facebook", href: "#" },
+              { Icon: FaInstagram, label: "Instagram", href: "#" },
+              {
+                Icon: FaWhatsapp,
+                label: "WhatsApp",
+                href: "https://wa.me/243829342781?text=" + encodeURIComponent("Bonjour Gladysa Signature Events, je souhaite obtenir des informations sur vos services."),
+              },
+            ].map(({ Icon, label, href }) => (
               <a
                 key={label}
-                href="#"
+                href={href}
+                target="_blank"
+                rel="noreferrer"
                 aria-label={label}
                 style={{
                   display: "inline-flex",

@@ -1,12 +1,12 @@
 import { FaWhatsapp } from "react-icons/fa";
 
-const whatsappNumber = import.meta.env.VITE_WHATSAPP_NUMBER?.replace(/\D/g, "");
+const DEFAULT_WHATSAPP = "243829342781";
+const whatsappNumber =
+	import.meta.env.VITE_WHATSAPP_NUMBER?.replace(/\D/g, "") || DEFAULT_WHATSAPP;
 const message = encodeURIComponent(
 	"Bonjour Gladysa Signature Events, je souhaite obtenir des informations sur vos services."
 );
-const whatsappUrl = whatsappNumber
-	? `https://wa.me/${whatsappNumber}?text=${message}`
-	: `https://wa.me/?text=${message}`;
+const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${message}`;
 
 function WhatsAppButton() {
 	return (
