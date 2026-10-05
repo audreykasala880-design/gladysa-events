@@ -1,0 +1,22 @@
+services:
+  - type: web
+    name: gladysa-signature-events-backend
+    env: node
+    buildCommand: npm install
+    startCommand: npm start
+    plan: free
+    disk:
+      name: gladysa-db-data
+      mountPath: /var/data
+      sizeGB: 1
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: DATABASE_PATH
+        value: /var/data/gladysa.sqlite
+      - key: ADMIN_API_KEY
+        generateValue: true
+      - key: CORS_ORIGIN
+        sync: false
