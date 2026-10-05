@@ -10,16 +10,24 @@ import Database from "better-sqlite3";
  * @returns {import('better-sqlite3').Database}
  */
 export function createDatabase(databasePath) {
-  const absolutePath = resolve(databasePath);
+  let targetPath = databasePath;
   try {
-    mkdirSync(dirname(absolutePath), { recursive: true });
-  } catch (err) {
-    if (err.code !== "EEXIST") {
-      console.warn("Notice creation dossier DB:", err.message);
-    }
+    const dir = dirname(resolve(targetPath));
+    mkdirSync(dir, { recursive: true });
+  } catch {
+    targetPath = "/tmp/gladysa.sqlite";
+    try {
+      mkdirSync(dirname(targetPath), { recursive: true });
+    } catch {}
   }
 
-  const db = new Database(absolutePath);
+  let db;
+  try {
+    db = new Database(resolve(targetPath));
+  } catch {
+    targetPath = "/tmp/gladysa.sqlite";
+    db = new Database(resolve(targetPath));
+  }
   db.pragma("journal_mode = WAL");
   db.pragma("foreign_keys = ON");
 
