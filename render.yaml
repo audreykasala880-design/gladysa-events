@@ -2,7 +2,7 @@ services:
   - type: web
     name: gladysa-signature-events-backend
     env: node
-    buildCommand: npm install
+    buildCommand: npm install --include=dev && npm run build
     startCommand: npm start
     plan: free
     disk:
