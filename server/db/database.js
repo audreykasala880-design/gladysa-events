@@ -11,7 +11,13 @@ import Database from "better-sqlite3";
  */
 export function createDatabase(databasePath) {
   const absolutePath = resolve(databasePath);
-  mkdirSync(dirname(absolutePath), { recursive: true });
+  try {
+    mkdirSync(dirname(absolutePath), { recursive: true });
+  } catch (err) {
+    if (err.code !== "EEXIST") {
+      console.warn("Notice creation dossier DB:", err.message);
+    }
+  }
 
   const db = new Database(absolutePath);
   db.pragma("journal_mode = WAL");
