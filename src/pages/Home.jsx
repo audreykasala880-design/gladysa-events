@@ -150,14 +150,16 @@ function Home() {
             </h2>
             <div className="gold-divider" style={{ margin: "20px 0" }} />
             <p>
-              Gladysa Signature Events accompagne les particuliers, entreprises,
-              associations et organisations dans la conception et la réalisation
-              d'événements mémorables.
+              Gladysa Signature Events est une agence événementielle et de production média
+              basée à Kinshasa. 
+              Nous créons des événements inspirants et des contenus vidéo d'une exigence broadcast,            
+              axés sur l'épanouissement de la jeunesse, la célébration de la famille et l'impact culturel.
+              Portés par la foi et le souci de l'excellence, nous transformons chaque rassemblement 
+              en une expérience porteuse de sens et d'émotion.
             </p>
             <p>
-              Notre mission est de transformer chaque idée en une expérience
-              unique grâce à notre créativité, notre professionnalisme et notre
-              souci du détail.
+              Des événements porteurs de sens, une signature vidéo d'excellence.
+              Célébrer la famille, inspirer la jeunesse et immortaliser vos récits à Kinshasa.
             </p>
             <Link className="btn-dark" to="/apropos" style={{ marginTop: "28px" }}>
               Découvrir l'agence

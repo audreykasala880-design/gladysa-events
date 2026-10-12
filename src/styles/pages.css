@@ -682,7 +682,8 @@
   }
 
   .event-card {
-    aspect-ratio: 16/9;
+    aspect-ratio: auto;
+    min-height: 350px;
   }
 
   .gallery-grid {
