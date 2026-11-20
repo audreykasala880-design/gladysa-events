@@ -16,3 +16,11 @@ services:
         generateValue: true
       - key: CORS_ORIGIN
         sync: false
+      - key: CLOUDINARY_URL
+        value: cloudinary://782579146525493:wFxvljSka_P2D7kGu0vOaJl7jB0@dxa5xdosh
+      - key: CLOUDINARY_CLOUD_NAME
+        value: dxa5xdosh
+      - key: CLOUDINARY_API_KEY
+        value: "782579146525493"
+      - key: CLOUDINARY_API_SECRET
+        value: wFxvljSka_P2D7kGu0vOaJl7jB0

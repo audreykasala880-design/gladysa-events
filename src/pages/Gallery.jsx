@@ -1,7 +1,9 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { FaExpand, FaXmark } from "react-icons/fa6";
 import "../styles/pages.css";
+
+const apiBaseUrl = (import.meta.env.VITE_API_BASE_URL || "").replace(/\/$/, "");
 
 import imgWedding from "../assets/gallery-wedding.png";
 import imgAnniversary from "../assets/gallery-anniversary.png";
@@ -9,9 +11,9 @@ import imgConference from "../assets/gallery-conference.png";
 import imgCultural from "../assets/gallery-cultural.png";
 import imgDecoration from "../assets/gallery-decoration.png";
 
-const galleryItems = [
+const initialGalleryItems = [
     {
-        id: 1,
+        id: "init-1",
         title: "Mariage d'Exception au Château",
         category: "mariages",
         categoryLabel: "Mariage",
@@ -19,7 +21,7 @@ const galleryItems = [
         caption: "Réception féerique sous les lustres en cristal du domaine"
     },
     {
-        id: 2,
+        id: "init-2",
         title: "Anniversaire d'Or & Égérie",
         category: "prive",
         categoryLabel: "Événement Privé",
@@ -27,7 +29,7 @@ const galleryItems = [
         caption: "Décoration thématique or et champagne pour 120 convives"
     },
     {
-        id: 3,
+        id: "init-3",
         title: "Sommet Leadership & Innovation",
         category: "corporate",
         categoryLabel: "Corporate",
@@ -35,7 +37,7 @@ const galleryItems = [
         caption: "Scénographie scénique et cocktail networking haute gamme"
     },
     {
-        id: 4,
+        id: "init-4",
         title: "Gala de Charité Prestige",
         category: "gala",
         categoryLabel: "Gala",
@@ -43,7 +45,7 @@ const galleryItems = [
         caption: "Soirée de gala caritative dans la grande salle des fêtes"
     },
     {
-        id: 5,
+        id: "init-5",
         title: "Célébration Culturelle sur Mesure",
         category: "prive",
         categoryLabel: "Culturel",
@@ -51,7 +53,7 @@ const galleryItems = [
         caption: "Mariage traditionnel réinventé avec une touche contemporaine"
     },
     {
-        id: 6,
+        id: "init-6",
         title: "Scénographie Florale & Art de la Table",
         category: "decoration",
         categoryLabel: "Décoration",
@@ -63,10 +65,39 @@ const galleryItems = [
 function Gallery() {
     const [activeFilter, setActiveFilter] = useState("all");
     const [selectedImg, setSelectedImg] = useState(null);
+    const [dynamicPhotos, setDynamicPhotos] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
+
+    useEffect(() => {
+        let isMounted = true;
+        fetch(`${apiBaseUrl}/api/photos`)
+            .then(res => res.ok ? res.json() : { photos: [] })
+            .then(data => {
+                if (isMounted && data.photos) {
+                    const formatted = data.photos.map(p => ({
+                        id: `db-${p.id}`,
+                        title: p.title,
+                        category: p.category,
+                        categoryLabel: p.categoryLabel,
+                        src: p.imageUrl,
+                        caption: p.caption || ""
+                    }));
+                    setDynamicPhotos(formatted);
+                }
+            })
+            .catch(() => {})
+            .finally(() => {
+                if (isMounted) setIsLoading(false);
+            });
+
+        return () => { isMounted = false; };
+    }, []);
+
+    const allItems = [...dynamicPhotos, ...initialGalleryItems];
 
     const filteredItems = activeFilter === "all"
-        ? galleryItems
-        : galleryItems.filter(item => item.category === activeFilter);
+        ? allItems
+        : allItems.filter(item => item.category === activeFilter);
 
     return (
         <main className="content-page">

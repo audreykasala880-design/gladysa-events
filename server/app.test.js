@@ -132,3 +132,72 @@ test("an admin can delete a quote by id", async () => {
     .set("Authorization", "Bearer test-admin-key");
   assert.equal(deleteNotFound.status, 404);
 });
+
+test("announcements lifecycle: create, list public, toggle active, and delete", async () => {
+  // Public list starts empty
+  const initialPublic = await request(app).get("/api/announcements");
+  assert.equal(initialPublic.status, 200);
+  assert.equal(initialPublic.body.announcements.length, 0);
+
+  // Unauthorized create rejected
+  const unauthCreate = await request(app).post("/api/admin/announcements").send({
+    title: "Offre d'automne",
+    content: "-20% sur la scénographie florale pour les mariages 2027",
+  });
+  assert.equal(unauthCreate.status, 401);
+
+  // Authenticated create
+  const created = await request(app)
+    .post("/api/admin/announcements")
+    .set("Authorization", "Bearer test-admin-key")
+    .send({
+      title: "Offre d'automne",
+      content: "-20% sur la scénographie florale pour les mariages 2027",
+      badge: "Promo",
+      linkUrl: "/contact",
+      linkText: "En profiter",
+    });
+  assert.equal(created.status, 201);
+  assert.equal(created.body.announcement.title, "Offre d'automne");
+  const announcementId = created.body.announcement.id;
+
+  // Appears in public list
+  const activePublic = await request(app).get("/api/announcements");
+  assert.equal(activePublic.body.announcements.length, 1);
+  assert.equal(activePublic.body.announcements[0].id, announcementId);
+
+  // Admin toggles active to 0
+  const toggled = await request(app)
+    .patch(`/api/admin/announcements/${announcementId}`)
+    .set("Authorization", "Bearer test-admin-key")
+    .send({ isActive: false });
+  assert.equal(toggled.status, 200);
+
+  // No longer appears in public list
+  const hiddenPublic = await request(app).get("/api/announcements");
+  assert.equal(hiddenPublic.body.announcements.length, 0);
+
+  // Still appears in admin list
+  const adminList = await request(app)
+    .get("/api/admin/announcements")
+    .set("Authorization", "Bearer test-admin-key");
+  assert.equal(adminList.body.announcements.length, 1);
+  assert.equal(adminList.body.announcements[0].isActive, 0);
+
+  // Admin deletes announcement
+  const deleted = await request(app)
+    .delete(`/api/admin/announcements/${announcementId}`)
+    .set("Authorization", "Bearer test-admin-key");
+  assert.equal(deleted.status, 200);
+
+  const emptyAdmin = await request(app)
+    .get("/api/admin/announcements")
+    .set("Authorization", "Bearer test-admin-key");
+  assert.equal(emptyAdmin.body.announcements.length, 0);
+});
+
+test("photos endpoint can be retrieved publicly", async () => {
+  const response = await request(app).get("/api/photos");
+  assert.equal(response.status, 200);
+  assert.ok(Array.isArray(response.body.photos));
+});

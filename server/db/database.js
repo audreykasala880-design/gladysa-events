@@ -46,6 +46,30 @@ export function createDatabase(databasePath) {
       created_at TEXT NOT NULL DEFAULT (datetime('now'))
     );
     CREATE INDEX IF NOT EXISTS quotes_created_at_idx ON quotes(created_at);
+
+    CREATE TABLE IF NOT EXISTS photos (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      title TEXT NOT NULL,
+      category TEXT NOT NULL,
+      category_label TEXT NOT NULL,
+      image_url TEXT NOT NULL,
+      public_id TEXT,
+      caption TEXT,
+      created_at TEXT NOT NULL DEFAULT (datetime('now'))
+    );
+    CREATE INDEX IF NOT EXISTS photos_category_idx ON photos(category);
+
+    CREATE TABLE IF NOT EXISTS announcements (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      title TEXT NOT NULL,
+      content TEXT NOT NULL,
+      badge TEXT DEFAULT 'Annonce',
+      link_url TEXT,
+      link_text TEXT,
+      is_active INTEGER NOT NULL DEFAULT 1,
+      created_at TEXT NOT NULL DEFAULT (datetime('now'))
+    );
+    CREATE INDEX IF NOT EXISTS announcements_active_idx ON announcements(is_active);
   `);
 
   // Migration : ajout de la colonne privacy_consent si absente (rétrocompatibilité)

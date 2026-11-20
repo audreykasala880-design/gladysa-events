@@ -3,6 +3,8 @@ import express from "express";
 import helmet from "helmet";
 import { createDatabase } from "./db/database.js";
 import quotesRouter from "./routes/quotes.js";
+import photosRouter from "./routes/photos.js";
+import announcementsRouter from "./routes/announcements.js";
 
 /**
  * Crée et configure l'application Express.
@@ -43,13 +45,14 @@ export function createApp({
         }
         callback(new Error("Origin not allowed"));
       },
-      methods: ["GET", "POST", "DELETE", "OPTIONS"],
+      methods: ["GET", "POST", "PATCH", "DELETE", "OPTIONS"],
       allowedHeaders: ["Content-Type", "Authorization"],
     })
   );
 
-  // ── Parseur JSON ─────────────────────────────────────────────────────────
-  app.use(express.json({ limit: "16kb" }));
+  // ── Parseur JSON (jusqu'à 15MB pour uploads photos) ─────────────────────
+  app.use(express.json({ limit: "15mb" }));
+  app.use(express.urlencoded({ extended: true, limit: "15mb" }));
 
   // ── Base de données (accessible via req.app.locals.db) ───────────────────
   app.locals.db = db;
@@ -59,6 +62,8 @@ export function createApp({
   // ── Routes ────────────────────────────────────────────────────────────────
   app.get("/api/health", (_req, res) => res.json({ status: "ok" }));
   app.use("/api", quotesRouter);
+  app.use("/api", photosRouter);
+  app.use("/api", announcementsRouter);
 
   // ── 404 API ───────────────────────────────────────────────────────────────
   app.use("/api", (_req, res) => {
