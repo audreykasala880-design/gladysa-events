@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { FaPhone, FaEnvelope, FaLocationDot, FaWhatsapp } from "react-icons/fa6";
+import { getApiBaseUrl } from "../utils/api";
 
-const apiBaseUrl = (import.meta.env.VITE_API_BASE_URL || "").replace(/\/$/, "");
+const apiBaseUrl = getApiBaseUrl();
 
 function Contact() {
     const [status, setStatus] = useState({ type: "", message: "" });

@@ -12,9 +12,43 @@ import {
   FaEye,
   FaXmark,
 } from "react-icons/fa6";
+import { getApiBaseUrl } from "../utils/api";
 import "../styles/pages.css";
 
-const apiBaseUrl = (import.meta.env.VITE_API_BASE_URL || "").replace(/\/$/, "");
+const apiBaseUrl = getApiBaseUrl();
+
+// Compression & redimensionnement d'image dans le navigateur (évite "Request body too large")
+function compressImageToDataUrl(file, maxWidth = 1920, maxHeight = 1920, quality = 0.85) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onerror = reject;
+    reader.onload = (event) => {
+      const img = new Image();
+      img.onerror = reject;
+      img.onload = () => {
+        let width = img.width;
+        let height = img.height;
+
+        if (width > maxWidth || height > maxHeight) {
+          const ratio = Math.min(maxWidth / width, maxHeight / height);
+          width = Math.round(width * ratio);
+          height = Math.round(height * ratio);
+        }
+
+        const canvas = document.createElement("canvas");
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext("2d");
+        ctx.drawImage(img, 0, 0, width, height);
+
+        const compressedDataUrl = canvas.toDataURL("image/jpeg", quality);
+        resolve(compressedDataUrl);
+      };
+      img.src = event.target.result;
+    };
+    reader.readAsDataURL(file);
+  });
+}
 
 // Synthétiseur audio Web Audio API pour le carillon de notification de luxe
 function playNotificationSound() {
@@ -66,6 +100,7 @@ function Dashboard() {
   const [photoCaption, setPhotoCaption] = useState("");
   const [photoImageBase64, setPhotoImageBase64] = useState("");
   const [photoPreview, setPhotoPreview] = useState("");
+  const [compressedInfo, setCompressedInfo] = useState("");
   const [isUploadingPhoto, setIsUploadingPhoto] = useState(false);
   const [photoUploadError, setPhotoUploadError] = useState("");
   const [photoUploadSuccess, setPhotoUploadSuccess] = useState("");
@@ -248,8 +283,8 @@ function Dashboard() {
     }
   }
 
-  // Sélection d'image pour upload
-  function handleFileSelect(e) {
+  // Sélection d'image pour upload avec compression automatique
+  async function handleFileSelect(e) {
     const file = e.target.files?.[0];
     if (!file) return;
 
@@ -258,18 +293,23 @@ function Dashboard() {
       return;
     }
 
-    if (file.size > 10 * 1024 * 1024) {
-      setPhotoUploadError("La taille de l'image ne doit pas dépasser 10 Mo");
+    if (file.size > 20 * 1024 * 1024) {
+      setPhotoUploadError("La taille de l'image ne doit pas dépasser 20 Mo");
       return;
     }
 
     setPhotoUploadError("");
-    const reader = new FileReader();
-    reader.onload = () => {
-      setPhotoImageBase64(reader.result);
-      setPhotoPreview(reader.result);
-    };
-    reader.readAsDataURL(file);
+    setCompressedInfo("Compression de l'image en cours…");
+    try {
+      const compressed = await compressImageToDataUrl(file, 1920, 1920, 0.85);
+      setPhotoImageBase64(compressed);
+      setPhotoPreview(compressed);
+      const sizeMb = ((compressed.length * 0.75) / 1024 / 1024).toFixed(2);
+      setCompressedInfo(`✅ Image optimisée (≈${sizeMb} Mo)`);
+    } catch (err) {
+      setPhotoUploadError("Impossible de lire l'image : " + err.message);
+      setCompressedInfo("");
+    }
   }
 
   // Upload photo Cloudinary
@@ -311,6 +351,7 @@ function Dashboard() {
       setPhotoCaption("");
       setPhotoImageBase64("");
       setPhotoPreview("");
+      setCompressedInfo("");
       if (data.photo) {
         setPhotos((prev) => [data.photo, ...prev]);
       }
@@ -855,7 +896,14 @@ function Dashboard() {
                         border: "1px solid var(--border)",
                       }}
                     />
-                    <small style={{ color: "var(--text-muted)" }}>Aperçu avant envoi vers Cloudinary</small>
+                    <div>
+                      <small style={{ color: "var(--text-muted)" }}>Aperçu avant envoi vers Cloudinary</small>
+                      {compressedInfo && (
+                        <div style={{ fontSize: "12px", color: compressedInfo.startsWith("✅") ? "var(--gold)" : "var(--text-muted)", marginTop: "4px" }}>
+                          {compressedInfo}
+                        </div>
+                      )}
+                    </div>
                   </div>
                 )}
 

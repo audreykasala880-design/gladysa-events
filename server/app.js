@@ -1,6 +1,8 @@
 import cors from "cors";
 import express from "express";
 import helmet from "helmet";
+import { existsSync } from "node:fs";
+import { resolve } from "node:path";
 import { createDatabase } from "./db/database.js";
 import quotesRouter from "./routes/quotes.js";
 import photosRouter from "./routes/photos.js";
@@ -50,16 +52,16 @@ export function createApp({
     })
   );
 
-  // ── Parseur JSON (jusqu'à 15MB pour uploads photos) ─────────────────────
-  app.use(express.json({ limit: "15mb" }));
-  app.use(express.urlencoded({ extended: true, limit: "15mb" }));
+  // ── Parseur JSON (jusqu'à 50MB pour uploads photos) ─────────────────────
+  app.use(express.json({ limit: "50mb" }));
+  app.use(express.urlencoded({ extended: true, limit: "50mb" }));
 
   // ── Base de données (accessible via req.app.locals.db) ───────────────────
   app.locals.db = db;
   app.locals.adminApiKey = adminApiKey;
   app.locals.close = () => db.close();
 
-  // ── Routes ────────────────────────────────────────────────────────────────
+  // ── Routes API ────────────────────────────────────────────────────────────
   app.get("/api/health", (_req, res) => res.json({ status: "ok" }));
   app.use("/api", quotesRouter);
   app.use("/api", photosRouter);
@@ -69,6 +71,18 @@ export function createApp({
   app.use("/api", (_req, res) => {
     res.status(404).json({ error: "API route not found" });
   });
+
+  // ── Fichiers statiques du client (Production / Render Fullstack) ─────────
+  const distPath = resolve("dist");
+  if (existsSync(distPath)) {
+    app.use(express.static(distPath));
+    app.use((req, res, next) => {
+      if (req.method === "GET" && !req.path.startsWith("/api")) {
+        return res.sendFile(resolve(distPath, "index.html"));
+      }
+      next();
+    });
+  }
 
   // ── Gestionnaire d'erreurs global ─────────────────────────────────────────
   // eslint-disable-next-line no-unused-vars

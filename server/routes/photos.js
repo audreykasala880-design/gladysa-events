@@ -14,6 +14,8 @@ const photosLimiter = rateLimit({
 
 router.get("/photos", photosLimiter, listPhotos);
 router.post("/admin/photos", requireAdminKey(), createPhoto);
+router.post("/photos", requireAdminKey(), createPhoto);
 router.delete("/admin/photos/:id", requireAdminKey(), removePhoto);
+router.delete("/photos/:id", requireAdminKey(), removePhoto);
 
 export default router;

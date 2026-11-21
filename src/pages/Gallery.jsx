@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { FaExpand, FaXmark } from "react-icons/fa6";
+import { getApiBaseUrl } from "../utils/api";
 import "../styles/pages.css";
 
-const apiBaseUrl = (import.meta.env.VITE_API_BASE_URL || "").replace(/\/$/, "");
+const apiBaseUrl = getApiBaseUrl();
 
 import imgWedding from "../assets/gallery-wedding.png";
 import imgAnniversary from "../assets/gallery-anniversary.png";

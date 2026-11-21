@@ -20,8 +20,17 @@ const limiter = rateLimit({
 
 router.get("/announcements", limiter, listPublicAnnouncements);
 router.get("/admin/announcements", requireAdminKey(), listAdminAnnouncements);
+
+// Supporte à la fois /announcements et /admin/announcements pour la création
 router.post("/admin/announcements", requireAdminKey(), createAnnouncement);
+router.post("/announcements", requireAdminKey(), createAnnouncement);
+
+// Supporte à la fois /announcements/:id et /admin/announcements/:id pour la mise à jour
 router.patch("/admin/announcements/:id", requireAdminKey(), toggleAnnouncement);
+router.patch("/announcements/:id", requireAdminKey(), toggleAnnouncement);
+
+// Supporte à la fois /announcements/:id et /admin/announcements/:id pour la suppression
 router.delete("/admin/announcements/:id", requireAdminKey(), removeAnnouncement);
+router.delete("/announcements/:id", requireAdminKey(), removeAnnouncement);
 
 export default router;
