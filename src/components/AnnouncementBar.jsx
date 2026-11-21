@@ -54,88 +54,109 @@ function AnnouncementBar() {
       role="banner"
       aria-label="Annonce du site"
       style={{
-        background: "linear-gradient(90deg, #181815 0%, #29261f 50%, #181815 100%)",
-        borderBottom: "1px solid rgba(197, 160, 89, 0.35)",
-        color: "#f5f3ef",
-        padding: "8px 16px",
-        fontSize: "0.86rem",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        gap: "12px",
-        position: "relative",
-        zIndex: 999,
-        transition: "all 0.3s ease",
+        width: "100%",
+        maxWidth: "1060px",
+        margin: "0 auto",
+        padding: "0 16px",
+        boxSizing: "border-box",
       }}
     >
       <div
         style={{
+          background: "linear-gradient(135deg, #1b1915 0%, #28241b 50%, #171512 100%)",
+          border: "1px solid rgba(197, 160, 89, 0.45)",
+          borderRadius: "14px",
+          boxShadow: "0 8px 24px rgba(0, 0, 0, 0.35), 0 0 16px rgba(197, 160, 89, 0.15)",
+          color: "#f5f3ef",
+          padding: "14px 22px",
+          fontSize: "0.92rem",
           display: "flex",
           alignItems: "center",
-          gap: "8px",
-          flexWrap: "wrap",
           justifyContent: "center",
-          textAlign: "center",
+          gap: "14px",
+          position: "relative",
+          transition: "all 0.3s ease",
         }}
       >
-        <span
+        <div
           style={{
-            background: "var(--gold, #c5a059)",
-            color: "#141412",
-            padding: "2px 8px",
-            borderRadius: "4px",
-            fontSize: "0.72rem",
-            fontWeight: 800,
-            textTransform: "uppercase",
-            letterSpacing: "0.5px",
-            display: "inline-flex",
+            display: "flex",
             alignItems: "center",
-            gap: "4px",
+            gap: "10px",
+            flexWrap: "wrap",
+            justifyContent: "center",
+            textAlign: "center",
+            paddingRight: "24px",
           }}
         >
-          <FaBullhorn size={10} />
-          {current.badge || "Annonce"}
-        </span>
-
-        <span style={{ fontWeight: 600, color: "#fff" }}>{current.title}</span>
-        <span style={{ color: "rgba(255,255,255,0.75)" }}>— {current.content}</span>
-
-        {current.linkUrl && (
-          <Link
-            to={current.linkUrl}
+          <span
             style={{
-              color: "var(--gold, #c5a059)",
-              fontWeight: 700,
-              textDecoration: "underline",
+              background: "var(--gold, #c5a059)",
+              color: "#141412",
+              padding: "3px 10px",
+              borderRadius: "20px",
+              fontSize: "0.74rem",
+              fontWeight: 800,
+              textTransform: "uppercase",
+              letterSpacing: "0.5px",
               display: "inline-flex",
               alignItems: "center",
-              gap: "4px",
-              marginLeft: "4px",
+              gap: "5px",
             }}
           >
-            {current.linkText || "En savoir plus"} <FaArrowRight size={10} />
-          </Link>
-        )}
-      </div>
+            <FaBullhorn size={11} />
+            {current.badge || "Annonce"}
+          </span>
 
-      <button
-        type="button"
-        onClick={() => handleDismiss(current.id)}
-        aria-label="Fermer l'annonce"
-        style={{
-          position: "absolute",
-          right: "12px",
-          background: "transparent",
-          border: "none",
-          color: "rgba(255,255,255,0.6)",
-          cursor: "pointer",
-          padding: "4px",
-          display: "flex",
-          alignItems: "center",
-        }}
-      >
-        <FaXmark size={14} />
-      </button>
+          <span style={{ fontWeight: 700, color: "#fff", fontSize: "0.95rem" }}>
+            {current.title}
+          </span>
+          <span style={{ color: "rgba(255, 255, 255, 0.82)" }}>
+            — {current.content}
+          </span>
+
+          {current.linkUrl && (
+            <Link
+              to={current.linkUrl}
+              style={{
+                color: "var(--gold, #c5a059)",
+                fontWeight: 700,
+                textDecoration: "underline",
+                display: "inline-flex",
+                alignItems: "center",
+                gap: "5px",
+                marginLeft: "6px",
+              }}
+            >
+              {current.linkText || "En savoir plus"} <FaArrowRight size={10} />
+            </Link>
+          )}
+        </div>
+
+        <button
+          type="button"
+          onClick={() => handleDismiss(current.id)}
+          aria-label="Fermer l'annonce"
+          title="Fermer"
+          style={{
+            position: "absolute",
+            right: "12px",
+            background: "rgba(255, 255, 255, 0.08)",
+            border: "1px solid rgba(255, 255, 255, 0.15)",
+            borderRadius: "50%",
+            color: "rgba(255, 255, 255, 0.75)",
+            cursor: "pointer",
+            width: "26px",
+            height: "26px",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            transition: "background 0.2s ease",
+          }}
+        >
+          <FaXmark size={12} />
+        </button>
+      </div>
     </div>
   );
 }

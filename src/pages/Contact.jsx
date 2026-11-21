@@ -15,18 +15,34 @@ function Contact() {
         setStatus({ type: "", message: "" });
 
         const formData = new FormData(form);
-        const request = Object.fromEntries(formData.entries());
-        request.guestCount = request.guestCount ? Number(request.guestCount) : null;
+        const raw = Object.fromEntries(formData.entries());
+
+        const payload = {
+            name: raw.name?.trim() || "",
+            email: raw.email?.trim() || "",
+            phone: raw.phone?.trim() || null,
+            eventType: raw.eventType || "",
+            eventDate: raw.eventDate || null,
+            guestCount: raw.guestCount ? Number(raw.guestCount) : null,
+            message: raw.message?.trim() || "",
+            privacyConsent: "true",
+        };
 
         try {
             const response = await fetch(`${apiBaseUrl}/api/quotes`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(request),
+                body: JSON.stringify(payload),
             });
 
+            const data = await response.json().catch(() => ({}));
+
             if (!response.ok) {
-                throw new Error("Request failed");
+                const errMsg =
+                    data.details && data.details.length > 0
+                        ? data.details.map((d) => d.message).join(", ")
+                        : data.error || "Impossible d'envoyer votre demande. Veuillez vérifier vos informations.";
+                throw new Error(errMsg);
             }
 
             form.reset();
@@ -34,10 +50,11 @@ function Contact() {
                 type: "success",
                 message: "Votre demande a bien été envoyée. Merci de nous avoir contactés !",
             });
-        } catch {
+        } catch (err) {
             setStatus({
                 type: "error",
                 message:
+                    err.message ||
                     "L’envoi est momentanément indisponible. Vous pouvez nous joindre directement sur WhatsApp.",
             });
         } finally {

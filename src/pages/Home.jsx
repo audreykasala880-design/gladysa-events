@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import {
   FaRing, FaBriefcase, FaMusic, FaCamera, FaPalette, FaTicket,
 } from "react-icons/fa6";
+import AnnouncementBar from "../components/AnnouncementBar";
 import "../styles/services.css";
 
 /* ── Données ─────────────────────────────────────────────── */
@@ -91,6 +92,11 @@ function Home() {
           <span>Découvrir</span>
           <div className="hero-scroll-arrow" />
         </div>
+      </section>
+
+      {/* ── BANNIÈRE D'ANNONCE (Au milieu de la page d'accueil) ── */}
+      <section className="home-announcement-wrapper" style={{ margin: "40px auto 10px auto", width: "100%", maxWidth: "1100px", padding: "0 16px" }}>
+        <AnnouncementBar />
       </section>
 
       {/* ── SERVICES ──────────────────────────────────────── */}
